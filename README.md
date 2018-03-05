@@ -2,7 +2,7 @@
 C 语言栈式线程池
 
 ## 示例
-> **whoami.c**
+> **./example/whoami.c**
       
 ```
 #include <unistd.h>
