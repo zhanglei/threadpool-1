@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include "../threadpool.h"
+#include "../src/threadpool.h"
 
 extern struct zThreadPool__ zThreadPool_;
 
