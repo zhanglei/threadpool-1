@@ -11,7 +11,7 @@ C 语言栈式线程池
 #include <unistd.h>
 #include <stdio.h>
 
-#include "threadpool.h"
+#include "../threadpool.h"
 
 extern struct zThreadPool__ zThreadPool_;
 
@@ -39,4 +39,4 @@ main(void) {
 ```
 
 ## 编译 
-cc -O2 -lpthread threadpool.c whoami.c -o whoami     
+cc -O2 -lpthread whoami.c ../threadpool.c -o whoami     
