@@ -1,10 +1,9 @@
 # threadpool
 C 语言栈式线程池
 
-## 调用示例
-cc -O2 -lpthread threadpool.c whoami.c -o whoami     
-
->whoami.c
+## 示例
+> **whoami.c**
+      
 ```
 #include <unistd.h>
 #include <stdio.h>
@@ -32,3 +31,6 @@ main(void) {
     return 0;
 }
 ```
+
+## 编译 
+cc -O2 -lpthread threadpool.c whoami.c -o whoami     
