@@ -56,8 +56,7 @@ meta_fn(void *_ __attribute__ ((__unused__))) {
         exit(1);
     }
 
-zMark:
-    pthread_mutex_lock(&stack_header_lock);
+loop: pthread_mutex_lock(&stack_header_lock);
 
     if (stack_header < (pool_siz - 1)) {
         pool_stack[++stack_header] = self_task;
@@ -73,7 +72,7 @@ zMark:
         self_task->fn(self_task->p_param);
 
         self_task->fn = NULL;
-        goto zMark;
+        goto loop;
     } else {
         pthread_mutex_unlock(&stack_header_lock);
     }
