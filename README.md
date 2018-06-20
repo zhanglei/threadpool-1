@@ -12,7 +12,7 @@ C 语言栈式线程池
 #include <stdio.h>
 #include "../src/threadpool.h"
 
-extern struct thread_pool pool;
+extern struct thread_pool threadpool;
 
 void *
 whoami(void *_ __attribute__ ((__unused__))) {
@@ -22,13 +22,10 @@ whoami(void *_ __attribute__ ((__unused__))) {
 
 int
 main(void) {
-    // 新建线程池
-    // 参数含义：常备线程数：4，动态扩展最大线程数：5
-    // 第二个参数必须大于第一个参数
-    pool.init(4, 5);
+    threadpool.init(4, 5);
 
     for (int i = 0; i < 10; i++) {
-        pool.add(whoami, NULL);
+        threadpool.add(whoami, NULL);
     }
 
     sleep(1);
