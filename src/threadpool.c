@@ -6,8 +6,8 @@
 #include <string.h>
 #include <errno.h>
 
-static int thread_pool_init(int, int);
-static int add_to_thread_pool(void * (*) (void *), void *);
+static int pool_init(int, int);
+static int task_new(void * (*) (void *), void *);
 
 /* 线程池栈结构 */
 static int pool_siz;
@@ -19,12 +19,12 @@ static pthread_mutex_t stack_header_lock;
 
 static pthread_t tid;
 
-/******************************
+/**
  * ====  对外公开的接口  ==== *
- ******************************/
-struct thread_pool thread_pool = {
-    .init = thread_pool_init,
-    .add = add_to_thread_pool,
+ */
+struct thread_pool threadpool = {
+    .init = pool_init,
+    .add = task_new,
 };
 
 static void *
@@ -78,7 +78,7 @@ loop: pthread_mutex_lock(&stack_header_lock);
     }
 
     /* 释放占用的系统全局信号量并清理资源占用 */
-    sem_post(thread_pool.p_limit_sem);
+    sem_post(threadpool.p_limit_sem);
     pthread_cond_destroy(&(self_task->cond_var));
     free(self_task);
 
@@ -91,7 +91,7 @@ loop: pthread_mutex_lock(&stack_header_lock);
  * @return: 成功返回 0，失败返回负数
  */
 static int
-thread_pool_init(int siz, int glob_siz) {
+pool_init(int siz, int glob_siz) {
     pthread_mutexattr_t zMutexAttr;
 
     /*
@@ -132,14 +132,14 @@ thread_pool_init(int siz, int glob_siz) {
     if (0 < glob_siz) {
         sem_unlink("__limit_sem__");
         if (SEM_FAILED ==
-                (thread_pool.p_limit_sem = sem_open("__limit_sem__", O_CREAT|O_RDWR, 0700, glob_siz))) {
+                (threadpool.p_limit_sem = sem_open("__limit_sem__", O_CREAT|O_RDWR, 0700, glob_siz))) {
             fprintf(stderr, "%s", strerror(errno));
             exit(1);
         }
     }
 
     for (int i = 0; i < pool_siz; i++) {
-        if (0 != sem_trywait(thread_pool.p_limit_sem)) {
+        if (0 != sem_trywait(threadpool.p_limit_sem)) {
             fprintf(stderr, "%s", strerror(errno));
             exit(1);
         } else {
@@ -160,14 +160,14 @@ thread_pool_init(int siz, int glob_siz) {
  * @return 成功返回 0，失败返回 -1
  */
 static int
-add_to_thread_pool(void * (* fn) (void *), void *fn_param) {
+task_new(void * (* fn) (void *), void *fn_param) {
     pthread_mutex_lock(&stack_header_lock);
 
     while (0 > stack_header) {
         pthread_mutex_unlock(&stack_header_lock);
 
         /* 不能超过系统全局范围线程总数限制 */
-        sem_wait(thread_pool.p_limit_sem);
+        sem_wait(threadpool.p_limit_sem);
 
         pthread_create(&tid, NULL, meta_fn, NULL);
 

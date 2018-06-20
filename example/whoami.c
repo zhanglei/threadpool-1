@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "../src/threadpool.h"
 
-extern struct thread_pool pool;
+extern struct thread_pool threadpool;
 
 void *
 whoami(void *_ __attribute__ ((__unused__))) {
@@ -12,10 +12,10 @@ whoami(void *_ __attribute__ ((__unused__))) {
 
 int
 main(void) {
-    pool.init(4, 5);
+    threadpool.init(4, 5);
 
     for (int i = 0; i < 10; i++) {
-        pool.add(whoami, NULL);
+        threadpool.add(whoami, NULL);
     }
 
     sleep(1);

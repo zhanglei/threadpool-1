@@ -10,7 +10,7 @@
 
 struct thread_task {
     pthread_cond_t cond_var;
-    char pad[64];
+    char __pad[128];
     pthread_mutex_t cond_lock;
 
     void * (* fn) (void *);
