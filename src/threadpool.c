@@ -78,7 +78,6 @@ loop: pthread_mutex_lock(&stack_header_lock);
     }
 
     /* 释放占用的系统全局信号量并清理资源占用 */
-    sem_post(threadpool.p_limit_sem);
     pthread_cond_destroy(&(self_task->cond_var));
     free(self_task);
 

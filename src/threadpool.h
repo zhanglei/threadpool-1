@@ -6,7 +6,6 @@
 #endif
 
 #include <pthread.h>
-#include <semaphore.h>
 
 struct thread_task {
     pthread_cond_t cond_var;
@@ -20,8 +19,6 @@ struct thread_task {
 struct thread_pool {
     int (* init) (int);
     int (* add) (void * (*) (void *), void *);
-
-    sem_t *p_limit_sem;
 };
 
 struct thread_pool threadpool;

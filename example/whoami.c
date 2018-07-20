@@ -6,7 +6,7 @@ extern struct thread_pool threadpool;
 
 void *
 whoami(void *_ __attribute__ ((__unused__))) {
-	pthread_detach(pthread_self());
+    pthread_detach(pthread_self());
     printf("I am HaHa\n");
     return NULL;
 }
