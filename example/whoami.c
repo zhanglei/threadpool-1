@@ -6,13 +6,14 @@ extern struct thread_pool threadpool;
 
 void *
 whoami(void *_ __attribute__ ((__unused__))) {
-    printf("I am %zd\n", pthread_self());
+	pthread_detach(pthread_self());
+    printf("I am HaHa\n");
     return NULL;
 }
 
 int
 main(void) {
-    threadpool.init(4, 5);
+    threadpool.init(4);
 
     for (int i = 0; i < 10; i++) {
         threadpool.add(whoami, NULL);

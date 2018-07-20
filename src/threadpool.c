@@ -6,7 +6,7 @@
 #include <string.h>
 #include <errno.h>
 
-static int pool_init(int, int);
+static int pool_init(int);
 static int task_new(void * (*) (void *), void *);
 
 /* 线程池栈结构 */
@@ -91,7 +91,7 @@ loop: pthread_mutex_lock(&stack_header_lock);
  * @return: 成功返回 0，失败返回负数
  */
 static int
-pool_init(int siz, int glob_siz) {
+pool_init(int siz) {
     pthread_mutexattr_t zMutexAttr;
 
     /*
@@ -123,30 +123,10 @@ pool_init(int siz, int glob_siz) {
         exit(1);
     }
 
-    /*
-     * 主进程程调用时，
-     *     glob_siz 置为正整数，会尝试清除已存在的旧文件，并新建信号量
-     * 子进程中调用时，
-     *     glob_siz 置为负数或 0，自动继承主进程的 handler
-     */
-    if (0 < glob_siz) {
-        sem_unlink("__limit_sem__");
-        if (SEM_FAILED ==
-                (threadpool.p_limit_sem = sem_open("__limit_sem__", O_CREAT|O_RDWR, 0700, glob_siz))) {
-            fprintf(stderr, "%s", strerror(errno));
-            exit(1);
-        }
-    }
-
     for (int i = 0; i < pool_siz; i++) {
-        if (0 != sem_trywait(threadpool.p_limit_sem)) {
+        if (0 != pthread_create(&tid, NULL, meta_fn, NULL)) {
             fprintf(stderr, "%s", strerror(errno));
             exit(1);
-        } else {
-            if (0 != pthread_create(&tid, NULL, meta_fn, NULL)) {
-                fprintf(stderr, "%s", strerror(errno));
-                exit(1);
-            }
         }
     }
 
@@ -165,12 +145,7 @@ task_new(void * (* fn) (void *), void *fn_param) {
 
     while (0 > stack_header) {
         pthread_mutex_unlock(&stack_header_lock);
-
-        /* 不能超过系统全局范围线程总数限制 */
-        sem_wait(threadpool.p_limit_sem);
-
         pthread_create(&tid, NULL, meta_fn, NULL);
-
         pthread_mutex_lock(&stack_header_lock);
     }
 

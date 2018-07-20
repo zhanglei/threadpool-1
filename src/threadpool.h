@@ -18,10 +18,12 @@ struct thread_task {
 };
 
 struct thread_pool {
-    int (* init) (int, int);
+    int (* init) (int);
     int (* add) (void * (*) (void *), void *);
 
     sem_t *p_limit_sem;
 };
+
+struct thread_pool threadpool;
 
 #endif
