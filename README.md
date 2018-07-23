@@ -33,5 +33,7 @@ main(void) {
 ```
 
 ## 编译 
+```
 cd example &&
 cc -O2 -lpthread whoami.c ../src/threadpool.c -o whoami     
+```
