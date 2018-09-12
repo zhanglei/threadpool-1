@@ -1,3 +1,7 @@
+/*
+ * 本实现基于效率方面的考虑，未控制线程数上限
+ * 若确实需要，可考虑添加一个全局信号量
+ */
 #include "threadpool.h"
 
 #include <fcntl.h>
