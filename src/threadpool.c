@@ -77,7 +77,7 @@ loop: pthread_mutex_lock(&stack_header_lock);
         pthread_mutex_unlock(&stack_header_lock);
     }
 
-    /* 释放占用的系统全局信号量并清理资源占用 */
+    /* 清理资源占用 */
     pthread_cond_destroy(&(self_task->cond_var));
     free(self_task);
 
@@ -85,7 +85,6 @@ loop: pthread_mutex_lock(&stack_header_lock);
 }
 
 /*
- * @param: glob_siz 系统全局线程数量上限
  * @param: siz 当前线程池初始化成功后会启动的线程数量
  * @return: 成功返回 0，失败返回负数
  */
